@@ -6,6 +6,7 @@ export interface Element {
   isBasic?: boolean;
   tier?: number; // 0-5, with 5 being the final dishes
   unlocked: boolean;
+  recipe?: string[]; // Array of element IDs used to create this element
 }
 
 export interface ElementsState {

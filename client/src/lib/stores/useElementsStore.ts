@@ -18,6 +18,12 @@ export const useElementsStore = create<ElementsStore>((set) => ({
       if (!state.elements[id] || state.elements[id].unlocked) {
         return state;
       }
+
+      // Import combinations to find the recipe
+      const { combinations } = require('../combinations');
+      
+      // Find the combination that results in this element
+      const combination = combinations.find(combo => combo.result === id);
       
       // Create a new elements object with the updated element
       return {
@@ -25,7 +31,9 @@ export const useElementsStore = create<ElementsStore>((set) => ({
           ...state.elements,
           [id]: {
             ...state.elements[id],
-            unlocked: true
+            unlocked: true,
+            // Add the recipe information if available
+            recipe: combination ? combination.elements : undefined
           }
         }
       };
