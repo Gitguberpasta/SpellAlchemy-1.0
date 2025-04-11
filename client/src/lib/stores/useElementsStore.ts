@@ -1,0 +1,48 @@
+import { create } from 'zustand';
+import { ElementsState, createInitialElements } from '../elements';
+
+interface ElementsStore {
+  elements: ElementsState;
+  unlockElement: (id: string) => void;
+  resetElements: () => void;
+}
+
+export const useElementsStore = create<ElementsStore>((set) => ({
+  elements: createInitialElements(),
+  
+  unlockElement: (id: string) => {
+    set((state) => {
+      // If the element doesn't exist or is already unlocked, do nothing
+      if (!state.elements[id] || state.elements[id].unlocked) {
+        return state;
+      }
+      
+      // Create a new elements object with the updated element
+      return {
+        elements: {
+          ...state.elements,
+          [id]: {
+            ...state.elements[id],
+            unlocked: true
+          }
+        }
+      };
+    });
+  },
+  
+  resetElements: () => {
+    set(() => {
+      // Reset to initial state, but keep basic elements unlocked
+      const initialElements = createInitialElements();
+      
+      // Set all non-basic elements to locked
+      Object.keys(initialElements).forEach(key => {
+        if (!initialElements[key].isBasic) {
+          initialElements[key].unlocked = false;
+        }
+      });
+      
+      return { elements: initialElements };
+    });
+  }
+}));
