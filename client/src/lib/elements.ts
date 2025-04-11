@@ -53,6 +53,14 @@ export const createInitialElements = (): ElementsState => ({
   },
   
   // TIER 1: Primary combinations (20 elements)
+  sun: {
+    id: 'sun',
+    name: 'Sun',
+    icon: 'sun',
+    description: 'The star at the center of our solar system.',
+    tier: 1,
+    unlocked: false
+  },
   steam: {
     id: 'steam',
     name: 'Steam',
@@ -223,6 +231,14 @@ export const createInitialElements = (): ElementsState => ({
   },
   
   // TIER 2: Secondary combinations (30 elements)
+  animal: {
+    id: 'animal',
+    name: 'Animal',
+    icon: 'animal',
+    description: 'A living organism that can move around.',
+    tier: 2,
+    unlocked: false
+  },
   metal: {
     id: 'metal',
     name: 'Metal',
@@ -457,6 +473,62 @@ export const createInitialElements = (): ElementsState => ({
   },
   
   // TIER 3: Complex combinations (30 elements)
+  cocoa: {
+    id: 'cocoa',
+    name: 'Cocoa',
+    icon: 'cocoa',
+    description: 'Seeds from the cacao tree used to make chocolate.',
+    tier: 3,
+    unlocked: false
+  },
+  soil: {
+    id: 'soil',
+    name: 'Soil',
+    icon: 'soil',
+    description: 'The upper layer of earth that plants grow in.',
+    tier: 3,
+    unlocked: false
+  },
+  pod: {
+    id: 'pod',
+    name: 'Pod',
+    icon: 'pod',
+    description: 'A seed case that splits when ripe.',
+    tier: 3,
+    unlocked: false
+  },
+  root: {
+    id: 'root',
+    name: 'Root',
+    icon: 'root',
+    description: 'The part of a plant that grows underground.',
+    tier: 3,
+    unlocked: false
+  },
+  leaf: {
+    id: 'leaf',
+    name: 'Leaf',
+    icon: 'leaf',
+    description: 'The flat green part of a plant.',
+    tier: 3,
+    unlocked: false
+  },
+  rock: {
+    id: 'rock',
+    name: 'Rock',
+    icon: 'rock',
+    description: 'A large piece of stone.',
+    tier: 3,
+    unlocked: false
+  },
+  desert: {
+    id: 'desert',
+    name: 'Desert',
+    icon: 'desert',
+    description: 'A dry, barren area with little precipitation.',
+    tier: 3,
+    unlocked: false
+  },
   flour: {
     id: 'flour',
     name: 'Flour',
