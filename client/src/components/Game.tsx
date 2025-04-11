@@ -56,6 +56,9 @@ const Game = () => {
   const { elements, unlockElement } = useElementsStore();
   const { toggleMute, isMuted, initializeAudio } = useAudio();
   const [theme, setTheme] = useState('default');
+  
+  // State for workspace items
+  const [workspaceItems, setWorkspaceItems] = useState<{id: string, uniqueId: string}[]>([]);
 
   // Load saved progress and settings on mount
   useEffect(() => {
@@ -158,12 +161,19 @@ const Game = () => {
       />
       
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <Workspace />
+        <Sidebar addElementToWorkspace={(element) => {
+          // Direct access to workspace's add element functionality
+          const workspaceItem = { 
+            id: element.id, 
+            uniqueId: `${element.id}-${Date.now()}` 
+          };
+          setWorkspaceItems(prev => [...prev, workspaceItem]);
+        }} />
+        <Workspace workspaceItems={workspaceItems} setWorkspaceItems={setWorkspaceItems} />
       </div>
       
-      {/* Theme CSS Variables */}
-      <style jsx global>{`
+      {/* Apply theme styles */}
+      <style dangerouslySetInnerHTML={{ __html: `
         :root {
           --header-bg: ${currentTheme.headerBg};
           --main-bg: ${currentTheme.mainBg};
@@ -188,7 +198,7 @@ const Game = () => {
         .text-accent {
           color: var(--accent-color);
         }
-      `}</style>
+      `}} />
     </div>
   );
 };

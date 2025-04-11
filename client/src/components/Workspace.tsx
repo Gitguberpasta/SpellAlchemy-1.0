@@ -3,22 +3,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useElementsStore } from '../lib/stores/useElementsStore';
 import ElementItem from './ElementItem';
 import ResetButton from './ResetButton';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useElementCombiner } from '../lib/useElementCombiner';
 import { useAudio } from '../lib/stores/useAudio';
 import { toast } from 'sonner';
 
-const Workspace = () => {
-  const [items, setItems] = useState<{id: string, uniqueId: string}[]>([]);
+interface WorkspaceProps {
+  workspaceItems: {id: string, uniqueId: string}[];
+  setWorkspaceItems: React.Dispatch<React.SetStateAction<{id: string, uniqueId: string}[]>>;
+}
+
+const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
   const { elements, unlockElement } = useElementsStore();
   const { checkCombination } = useElementCombiner();
-  const { playHit, playSuccess } = useAudio();
+  const { playHit, playSuccess, playTierSound } = useAudio();
 
   // Check for combinations whenever workspace items change
   useEffect(() => {
-    if (items.length >= 2) {
+    if (workspaceItems.length >= 2) {
       // Get the actual element data for the items
-      const itemElements = items.map(item => ({
+      const itemElements = workspaceItems.map(item => ({
         ...elements[item.id],
         uniqueId: item.uniqueId
       }));
@@ -30,7 +34,7 @@ const Workspace = () => {
           
           if (result) {
             // Remove the two combined elements
-            const newItems = items.filter(item => 
+            const newItems = workspaceItems.filter(item => 
               item.uniqueId !== itemElements[i].uniqueId && 
               item.uniqueId !== itemElements[j].uniqueId
             );
@@ -45,15 +49,21 @@ const Workspace = () => {
               });
             }
             
-            setItems(newItems);
+            setWorkspaceItems(newItems);
             
             // Unlock the new element
             const isNewDiscovery = !elements[result.id].unlocked;
             unlockElement(result.id);
             
-            // Play sound and show toast for new discoveries
+            // Play tier-specific sound for new discoveries
             if (isNewDiscovery) {
-              playSuccess();
+              const tier = elements[result.id].tier || 0;
+              if (tier > 0) {
+                playTierSound(tier);
+              } else {
+                playSuccess();
+              }
+              
               toast.success(`Discovered: ${result.name}!`, {
                 description: result.description || `You combined elements to create ${result.name}`,
                 duration: 3000,
@@ -67,7 +77,7 @@ const Workspace = () => {
         }
       }
     }
-  }, [items, elements, unlockElement, checkCombination, playHit, playSuccess]);
+  }, [workspaceItems, elements, unlockElement, checkCombination, playHit, playSuccess, playTierSound]);
 
   // Set up drop functionality
   const [{ isOver }, drop] = useDrop(() => ({
@@ -77,7 +87,7 @@ const Workspace = () => {
       playHit();
       
       // Add the dropped element
-      setItems(prev => [
+      setWorkspaceItems(prev => [
         ...prev, 
         { 
           id: item.id, 
@@ -94,25 +104,25 @@ const Workspace = () => {
 
   // Handle clearing the workspace
   const handleClear = () => {
-    setItems([]);
+    setWorkspaceItems([]);
   };
 
   // Remove a single item from the workspace
   const removeItem = (uniqueId: string) => {
-    setItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
+    setWorkspaceItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
   };
 
   return (
     <div 
       ref={drop}
-      className={`flex-1 p-4 overflow-hidden relative ${isOver ? 'bg-[#580a5b]/30' : 'bg-[#430045]'}`}
+      className={`flex-1 p-4 overflow-hidden relative ${isOver ? 'bg-[#580a5b]/30' : 'bg-workspace'}`}
     >
       <div className="h-full w-full border-4 border-dashed border-yellow-500/30 rounded-lg overflow-auto p-4 relative">
         <div className="absolute top-4 right-4 z-10">
           <ResetButton onReset={handleClear} />
         </div>
         
-        {items.length === 0 && (
+        {workspaceItems.length === 0 && (
           <div className="flex items-center justify-center h-full text-yellow-500/50 text-xl">
             <p>Drag elements here to combine them</p>
           </div>
@@ -120,7 +130,7 @@ const Workspace = () => {
         
         <AnimatePresence>
           <div className="flex flex-wrap gap-4 p-2">
-            {items.map((item) => {
+            {workspaceItems.map((item) => {
               const element = elements[item.id];
               if (!element) return null;
               
