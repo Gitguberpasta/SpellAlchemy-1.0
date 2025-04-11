@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useElementsStore } from '../lib/stores/useElementsStore';
 import { ElementIcon } from '../assets/icons';
+import { useGame } from '../lib/stores/useGame';
 
 interface AlchemyAIProps {
   onClose: () => void;
@@ -64,7 +65,7 @@ const COMMON_QUESTIONS = [
 ];
 
 const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
-  const { elements } = useElementsStore();
+  const { elements, unlockAllElements, unlockTierElements, resetElements } = useElementsStore();
   const [userInput, setUserInput] = useState('');
   const [conversation, setConversation] = useState<{role: 'user' | 'ai', content: string, timestamp: number}[]>([]);
   const [selectedPersonality, setSelectedPersonality] = useState(AI_PERSONALITIES.SAGE);
@@ -154,9 +155,44 @@ const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
     }, 1000 + Math.random() * 1000);
   };
   
+  // Handle cheat codes
+  const processCheatCode = (input: string): string | null => {
+    const lowercaseInput = input.toLowerCase().trim();
+    
+    // Cheat code for unlocking all elements
+    if (lowercaseInput === "unlock all" || lowercaseInput === "/unlock_all" || lowercaseInput === "cheat:unlock_all") {
+      unlockAllElements();
+      return "🎉 Cheat code activated! All elements have been unlocked. Happy experimenting!";
+    }
+    
+    // Cheat code for unlocking a specific tier
+    const tierMatch = lowercaseInput.match(/unlock tier (\d+)|\/unlock_tier_(\d+)|cheat:unlock_tier_(\d+)/);
+    if (tierMatch) {
+      const tier = parseInt(tierMatch[1] || tierMatch[2] || tierMatch[3]);
+      unlockTierElements(tier);
+      return `🎉 Cheat code activated! All tier ${tier} elements have been unlocked.`;
+    }
+    
+    // Cheat code for resetting progress
+    if (lowercaseInput === "reset progress" || lowercaseInput === "/reset" || lowercaseInput === "cheat:reset") {
+      resetElements();
+      return "🔄 Progress reset! You now have only the basic elements. Start experimenting again!";
+    }
+    
+    return null; // Not a cheat code
+  };
+
   // Function to generate AI response based on user input
   const generateResponse = (input: string) => {
     const lowercaseInput = input.toLowerCase();
+    
+    // First check if it's a cheat code
+    const cheatResponse = processCheatCode(input);
+    if (cheatResponse) {
+      handleAIResponse(cheatResponse);
+      return;
+    }
+    
     let response = "";
     
     // Check if input contains element names
@@ -183,6 +219,10 @@ const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
     // Check for recipe questions
     else if (lowercaseInput.includes("how") && (lowercaseInput.includes("make") || lowercaseInput.includes("create"))) {
       response = "To create new elements, you need to experiment with combining existing ones. Try dragging two elements together in the workspace! What specific element are you trying to create?";
+    }
+    // Check for cheat code instructions
+    else if (lowercaseInput.includes("cheat") || lowercaseInput.includes("hack") || lowercaseInput.includes("unlock")) {
+      response = "I know a few secrets... Try typing 'unlock all' to reveal all elements, or 'unlock tier X' to unlock a specific tier (where X is a number from 1-5). You can also type 'reset progress' to start over.";
     }
     // Check for help request
     else if (lowercaseInput.includes("help") || lowercaseInput.includes("hint")) {

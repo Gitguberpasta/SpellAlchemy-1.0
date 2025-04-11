@@ -64,11 +64,43 @@ const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
                 playSuccess();
               }
               
-              toast.success(`Discovered: ${result.name}!`, {
-                description: result.description || `You combined elements to create ${result.name}`,
-                duration: 3000,
-              });
+              // Show an enhanced notification for new discoveries
+              toast.custom((t) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.3 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                  className={`${
+                    t.visible ? 'animate-bounce' : ''
+                  } pointer-events-auto flex items-center bg-gradient-to-r from-purple-800 to-yellow-700 p-4 rounded-lg shadow-2xl border-2 border-yellow-400`}
+                >
+                  <div className="text-yellow-300 text-4xl mr-4">
+                    <i className={`fas fa-${elements[result.id].icon}`}></i>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-yellow-300 flex items-center">
+                      <span className="mr-2">✨</span>
+                      New Discovery: {result.name}!
+                      <span className="ml-2">✨</span>
+                    </h3>
+                    <p className="text-white text-sm">
+                      {result.description || `You combined elements to create ${result.name}`}
+                    </p>
+                    <div className="mt-2 text-xs text-yellow-200">
+                      Tier {tier} Element
+                    </div>
+                  </div>
+                </motion.div>
+              ), { duration: 4000 });
+              
             } else {
+              // Show a simple notification for already discovered combinations
+              toast.info(`Created ${result.name} again`, {
+                description: "This combination was already discovered",
+                duration: 1500,
+                position: "bottom-center",
+              });
+              
               playHit();
             }
             
@@ -128,8 +160,8 @@ const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
           </div>
         )}
         
-        <AnimatePresence>
-          <div className="flex flex-wrap gap-4 p-2">
+        <div className="flex flex-wrap gap-4 p-2">
+          <AnimatePresence>
             {workspaceItems.map((item) => {
               const element = elements[item.id];
               if (!element) return null;
@@ -138,9 +170,36 @@ const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
                 <motion.div
                   key={item.uniqueId}
                   layout
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
+                  initial={{ scale: 0, rotate: -10, opacity: 0 }}
+                  animate={{ 
+                    scale: 1, 
+                    rotate: 0, 
+                    opacity: 1, 
+                    transition: {
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
+                      duration: 0.5
+                    }
+                  }}
+                  exit={{ 
+                    scale: 0, 
+                    opacity: 0, 
+                    y: 20,
+                    transition: { duration: 0.3 }
+                  }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    rotate: [-1, 1, -1],
+                    transition: { 
+                      rotate: { 
+                        repeat: Infinity, 
+                        repeatType: "reverse", 
+                        duration: 0.3
+                      }
+                    }
+                  }}
+                  className="origin-bottom"
                 >
                   <ElementItem
                     id={element.id}
@@ -152,8 +211,8 @@ const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
                 </motion.div>
               );
             })}
-          </div>
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

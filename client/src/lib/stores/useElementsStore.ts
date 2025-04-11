@@ -5,6 +5,8 @@ interface ElementsStore {
   elements: ElementsState;
   unlockElement: (id: string) => void;
   resetElements: () => void;
+  unlockAllElements: () => void;
+  unlockTierElements: (tier: number) => void;
 }
 
 export const useElementsStore = create<ElementsStore>((set) => ({
@@ -43,6 +45,42 @@ export const useElementsStore = create<ElementsStore>((set) => ({
       });
       
       return { elements: initialElements };
+    });
+  },
+  
+  // Cheat code: Unlock all elements
+  unlockAllElements: () => {
+    set((state) => {
+      const updatedElements = { ...state.elements };
+      
+      // Set all elements to unlocked
+      Object.keys(updatedElements).forEach(key => {
+        updatedElements[key] = {
+          ...updatedElements[key],
+          unlocked: true
+        };
+      });
+      
+      return { elements: updatedElements };
+    });
+  },
+  
+  // Cheat code: Unlock all elements of a specific tier
+  unlockTierElements: (tier: number) => {
+    set((state) => {
+      const updatedElements = { ...state.elements };
+      
+      // Set all elements of the specified tier to unlocked
+      Object.keys(updatedElements).forEach(key => {
+        if (updatedElements[key].tier === tier) {
+          updatedElements[key] = {
+            ...updatedElements[key],
+            unlocked: true
+          };
+        }
+      });
+      
+      return { elements: updatedElements };
     });
   }
 }));
