@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useElementsStore } from '../lib/stores/useElementsStore';
 import { ElementIcon } from '../assets/icons';
 import { useGame } from '../lib/stores/useGame';
+import { transformerModel } from '../lib/transformerModel';
 
 interface AlchemyAIProps {
   onClose: () => void;
@@ -14,19 +15,29 @@ const AI_PERSONALITIES = {
     name: "Master Alchemist",
     icon: "🧙‍♂️",
     greeting: "Greetings, young alchemist. What knowledge do you seek today?",
-    style: "wise and mystical, uses ancient terminology"
+    style: "wise and mystical, uses ancient terminology",
+    useTransformer: false
   },
   MODERN: {
     name: "Dr. Elemental",
     icon: "🔬",
     greeting: "Hello! I'm Dr. Elemental. How can I assist with your elemental experiments today?",
-    style: "scientific and precise, uses modern terminology"
+    style: "scientific and precise, uses modern terminology",
+    useTransformer: false
   },
   FRIENDLY: {
     name: "Mixie",
     icon: "🧪",
     greeting: "Hey there! Mixie here! Ready to discover some amazing combinations?",
-    style: "enthusiastic and casual, uses simple language"
+    style: "enthusiastic and casual, uses simple language",
+    useTransformer: false
+  },
+  ELDER: {
+    name: "Great Elder",
+    icon: "🌌",
+    greeting: "I am the Great Elder, keeper of ancient knowledge. My wisdom spans the ages. What answers do you seek in the cosmic dance of elements?",
+    style: "mysterious and ancient, speaks in profound metaphors and riddles",
+    useTransformer: true
   }
 };
 
@@ -118,15 +129,25 @@ const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
       timestamp: Date.now()
     }]);
     
-    // Generate AI response
-    setIsTyping(true);
-    setTimeout(() => {
-      generateResponse(userInput);
-      setIsTyping(false);
-    }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
-    
+    // Store input before clearing
+    const input = userInput;
     // Clear input
     setUserInput('');
+    
+    // Generate AI response
+    setIsTyping(true);
+    
+    // Add delay for natural conversation feel
+    setTimeout(async () => {
+      try {
+        await generateResponse(input);
+      } catch (error) {
+        console.error("Error generating response:", error);
+        handleAIResponse("My ancient wisdom has encountered a cosmic disturbance. Please try again.");
+      } finally {
+        // We don't set isTyping to false here because it's handled in the response functions
+      }
+    }, 1000 + Math.random() * 500); // Random delay between 1-1.5 seconds
   };
   
   const handleAIResponse = (message: string) => {
@@ -183,13 +204,19 @@ const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
   };
 
   // Function to generate AI response based on user input
-  const generateResponse = (input: string) => {
+  const generateResponse = async (input: string) => {
     const lowercaseInput = input.toLowerCase();
     
     // First check if it's a cheat code
     const cheatResponse = processCheatCode(input);
     if (cheatResponse) {
       handleAIResponse(cheatResponse);
+      return;
+    }
+    
+    // Use transformer model for Great Elder personality
+    if (selectedPersonality.useTransformer) {
+      handleElderResponse(input);
       return;
     }
     
@@ -241,6 +268,61 @@ const AlchemyAI: React.FC<AlchemyAIProps> = ({ onClose }) => {
     }
     
     handleAIResponse(response);
+  };
+  
+  // Function to handle the Great Elder's responses with transformer.js
+  const handleElderResponse = async (input: string) => {
+    try {
+      setIsTyping(true);
+      
+      // First initialize the model if not ready
+      if (!transformerModel.isReady() && !transformerModel.isLoading()) {
+        handleAIResponse("I am awakening my cosmic wisdom. This may take a moment as I consult the ancient scrolls...");
+        await transformerModel.initialize();
+      }
+      
+      // If model isn't ready yet, provide a fallback response
+      if (!transformerModel.isReady()) {
+        setTimeout(() => {
+          handleAIResponse("My ancient wisdom is still materializing. Please ask me again in a moment.");
+          setIsTyping(false);
+        }, 2000);
+        return;
+      }
+
+      // Create a prompt for the Elder personality to guide the model
+      const unlockedElementNames = Object.values(elements)
+        .filter(el => el.unlocked)
+        .map(el => el.name)
+        .join(", ");
+      
+      const prompt = `You are the Great Elder, an ancient and wise alchemist who speaks in mystical and cosmic terms.
+A seeker asks about: "${input}"
+Currently discovered elements: ${unlockedElementNames || "only the basic elements (Water, Fire, Earth, Air)"}
+Reply with deep wisdom about alchemy and elements:`;
+      
+      // Generate response using transformer model
+      const response = await transformerModel.generateText(prompt, 150);
+      
+      // Format response with mystical flavor
+      const formattedResponse = response
+        .replace(/^"/, "") // Remove leading quote if present
+        .replace(/"$/, "") // Remove trailing quote if present
+        .replace(/^\s*elder:/i, "") // Remove 'elder:' prefix if present
+        .trim();
+
+      // Add an Elder touch if response is too short or empty
+      const finalResponse = formattedResponse.length < 20 ? 
+        `${formattedResponse} The cosmic elements whisper secrets beyond mortal understanding. Combine them wisely, and new discoveries shall be revealed.` : 
+        formattedResponse;
+      
+      handleAIResponse(finalResponse);
+    } catch (error) {
+      console.error("Elder response error:", error);
+      handleAIResponse("The cosmic forces are in disarray. My ancient wisdom fails me temporarily. Ask again, seeker.");
+    } finally {
+      setIsTyping(false);
+    }
   };
   
   const changePersonality = (personality: typeof AI_PERSONALITIES.SAGE) => {

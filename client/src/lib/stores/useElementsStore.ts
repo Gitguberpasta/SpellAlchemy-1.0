@@ -23,7 +23,7 @@ export const useElementsStore = create<ElementsStore>((set) => ({
       const { combinations } = require('../combinations');
       
       // Find the combination that results in this element
-      const combination = combinations.find(combo => combo.result === id);
+      const combination = combinations.find((combo: { result: string }) => combo.result === id);
       
       // Create a new elements object with the updated element
       return {
