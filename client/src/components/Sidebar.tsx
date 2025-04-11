@@ -43,8 +43,8 @@ const Sidebar = ({ addElementToWorkspace }: SidebarProps) => {
   const availableTiers = Array.from(
     new Set(
       Object.values(elements)
-        .filter(element => element.unlocked)
-        .map(element => element.tier)
+        .filter(element => element.unlocked && element.tier !== undefined)
+        .map(element => element.tier as number)
     )
   ).sort();
 
@@ -82,7 +82,7 @@ const Sidebar = ({ addElementToWorkspace }: SidebarProps) => {
           {availableTiers.map((tier) => (
             <button
               key={tier}
-              onClick={() => setFilterTier(tier === filterTier ? null : tier)}
+              onClick={() => setFilterTier(tier === filterTier ? null : tier as React.SetStateAction<number | null>)}
               className={`px-2 py-1 text-xs rounded transition-colors ${
                 tier === filterTier 
                   ? 'bg-yellow-500 text-[#3a003e]' 

@@ -65,14 +65,12 @@ const Workspace = ({ workspaceItems, setWorkspaceItems }: WorkspaceProps) => {
               }
               
               // Show an enhanced notification for new discoveries
-              toast.custom((t) => (
+              toast.custom(() => (
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.3 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-                  className={`${
-                    t.visible ? 'animate-bounce' : ''
-                  } pointer-events-auto flex items-center bg-gradient-to-r from-purple-800 to-yellow-700 p-4 rounded-lg shadow-2xl border-2 border-yellow-400`}
+                  className="pointer-events-auto flex items-center bg-gradient-to-r from-purple-800 to-yellow-700 p-4 rounded-lg shadow-2xl border-2 border-yellow-400 animate-bounce"
                 >
                   <div className="text-yellow-300 text-4xl mr-4">
                     <i className={`fas fa-${elements[result.id].icon}`}></i>
