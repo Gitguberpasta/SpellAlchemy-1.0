@@ -101,7 +101,6 @@ export const ElementIcon: React.FC<ElementIconProps> = ({ icon }) => {
     seed: <i className="fas fa-seedling"></i>,
     light: <i className="fas fa-lightbulb"></i>,
     heat: <i className="fas fa-thermometer-full"></i>,
-    animal: <i className="fas fa-paw"></i>,
     pottery: <i className="fas fa-mortar-pestle"></i>,
     coal: <i className="fas fa-cube" style={{ color: 'black' }}></i>,
     wood: <i className="fas fa-tree"></i>,
