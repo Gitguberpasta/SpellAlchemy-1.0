@@ -1,0 +1,30 @@
+The above error occurred in the <Workspace> component:
+
+    at Workspace (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/components/Workspace.tsx:27:22)
+    at div
+    at div
+    at Game (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/components/Game.tsx:70:33)
+    at div
+    at DndProvider2 (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-dnd.js?v=98793b2f:1505:9)
+    at QueryClientProvider (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=98793b2f:2805:3)
+    at App (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/App.tsx?v=oHh9tTdkMsKrRvEe59vYo:28:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+at Workspace (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/components/Workspace.tsx:27:22)
+at div
+at div
+at Game (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/components/Game.tsx:70:33)
+at div
+at DndProvider2 (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-dnd.js?v=98793b2f:1505:9)
+at QueryClientProvider (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=98793b2f:2805:3)
+at App (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/src/App.tsx?v=oHh9tTdkMsKrRvEe59vYo:28:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+at t.value (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://1680836e-e669-404d-b563-c2d6e29a67a1-00-1nh0p4hsz6qi9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+require is not defined
